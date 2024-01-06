@@ -10,7 +10,7 @@ from supabase import create_client, Client
 #supabase = create_client(
 #    st.secrets["secretsurl"],
 #    st.secrets["secretskey"] 
-)
+#)
 
 #Colecoes_list = supabase.table('dColecoes').select('id', 'nome_USA').execute()
 
