@@ -3,30 +3,49 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-"""Validar os acessos as servidor"""
+"""  < PENDENTE : MIGRAR A URL E A CHAVE PARA A ÁREA SECRETA >"""
 import os
-# supabase import create_client, Client
-#secretsurl = 'https://jdwvqrblltbbffnivqcn.supabase.co'
-#secretskey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impkd3ZxcmJsbHRiYmZmbml2cWNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTg1NzU3NDgsImV4cCI6MjAxNDE1MTc0OH0.wpPFFHOZ4QV6i8FwSvS6e17Sdn86D_H88UOVWccgxPs'
+from supabase import create_client, Client
+secretsurl = 'https://jdwvqrblltbbffnivqcn.supabase.co'
+secretskey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impkd3ZxcmJsbHRiYmZmbml2cWNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTg1NzU3NDgsImV4cCI6MjAxNDE1MTc0OH0.wpPFFHOZ4QV6i8FwSvS6e17Sdn86D_H88UOVWccgxPs'
 
-#supabase = create_client(
-#    st.secrets["secretsurl"],
-#    st.secrets["secretskey"] 
-#)
-
-#Colecoes_list = supabase.table('dColecoes').select('id', 'nome_USA').execute()
-""" Incluir uma validação de dados para selecionar a coleção """
-
-Colecao_selecionada = st.selectbox(
-    label= "Coleção:", 
-    options=["teste", "sera", "Que", "vai?"],
-    index=None,
-    disabled=False,
-    # key="ID" -> No futuro, recebrá a ID da coleção.
-    help=" Clique e selecione a coleção que será utilizada na simulação de contratos",
-    placeholder= "Selecione a coleção desejada",
-    label_visibility= "visible"
+supabase = create_client(
+    secretsurl,
+    secretskey 
 )
+
+Colecoes_df = pd.DataFrame(
+    supabase.table('dColecoes'
+    ).select('id', 'nome_USA'
+    ).execute(
+    ).data
+)
+
+st.selectbox(
+    label = "Coleção:", 
+    options = Colecoes_df['nome_USA'], #["teste", "sera", "Que", "vai?"],
+    index = None,
+    disabled = False,
+    key = "Colecao_selecionada",
+    help = "Clique e selecione a coleção que será utilizada na simulação de contratos",
+    placeholder = "Selecione a coleção desejada",
+    label_visibility = "visible"
+)
+Id_Colecao_selecionada = Colecoes_df.loc[
+    (Colecoes_df['nome_USA'] == st.session_state.get('Colecao_selecionada'))
+    ]['id'].to_string(index=False)
+
+dArmas = supabase.table('dArmas').select('nome, dArmas_Tipo(arma), dNivel(nivel,nivel_descricao_USA)').eq('id_colecao', 1).execute().data
+dArmas_list = []
+for skin in dArmas:
+    nome = skin['nome']
+    arma = skin['dArmas_Tipo']['arma']
+    nivel =  skin['dNivel']['nivel']
+    nivel_USA = skin['dNivel']['nivel_descricao_USA']
+
+    dArmas_list.append([nome, arma, nivel, nivel_USA])
+
+dArmas_df = pd.DataFrame(dArmas_list, columns = ['Nome', 'Arma', 'Nivel','Nivel USA'])
 
 """
 Com base na seleção informada:
