@@ -2,6 +2,25 @@ import altair as alt
 import numpy as np
 import pandas as pd
 import streamlit as st
+import os
+from supabase import create_client, Client
+#secretsurl = 'https://jdwvqrblltbbffnivqcn.supabase.co'
+#secretskey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impkd3ZxcmJsbHRiYmZmbml2cWNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTg1NzU3NDgsImV4cCI6MjAxNDE1MTc0OH0.wpPFFHOZ4QV6i8FwSvS6e17Sdn86D_H88UOVWccgxPs'
+
+#supabase = create_client(
+#    st.secrets["secretsurl"],
+#    st.secrets["secretskey"] 
+)
+
+#Colecoes_list = supabase.table('dColecoes').select('id', 'nome_USA').execute()
+
+Colecao_selecionada = st.multiselect(
+    "Coleção", 
+    options=[" teste", "sera", "Que", "vai?"],
+    max_selections= 1,
+    disabled=False,
+    placeholder= "Selecione a coleção desejada", 
+    )
 
 """
 
