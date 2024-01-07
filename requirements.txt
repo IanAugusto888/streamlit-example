@@ -1,4 +1,8 @@
 altair
 pandas
 streamlit
+<<<<<<< HEAD
 Supabase
+=======
+Supabase
+>>>>>>> 2d4636f (Inclusão de "Supabase")
