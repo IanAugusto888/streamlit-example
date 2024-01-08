@@ -2,10 +2,11 @@ import altair as alt
 import numpy as np
 import pandas as pd
 import streamlit as st
-
-"""  < PENDENTE : MIGRAR A URL E A CHAVE PARA A ÁREA SECRETA >"""
 import os
 from supabase import create_client, Client
+
+"""  < PENDENTE : MIGRAR A URL E A CHAVE PARA A ÁREA SECRETA >"""
+
 secretsurl = 'https://jdwvqrblltbbffnivqcn.supabase.co'
 secretskey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impkd3ZxcmJsbHRiYmZmbml2cWNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTg1NzU3NDgsImV4cCI6MjAxNDE1MTc0OH0.wpPFFHOZ4QV6i8FwSvS6e17Sdn86D_H88UOVWccgxPs'
 
@@ -22,6 +23,7 @@ Colecoes_df = pd.DataFrame(
 )
 
 st.selectbox(
+    # Lista Coleção Selecionada
     label = "Coleção:", 
     options = Colecoes_df['nome_USA'], #["teste", "sera", "Que", "vai?"],
     index = None,
@@ -31,11 +33,15 @@ st.selectbox(
     placeholder = "Selecione a coleção desejada",
     label_visibility = "visible"
 )
+
 Id_Colecao_selecionada = Colecoes_df.loc[
     (Colecoes_df['nome_USA'] == st.session_state.get('Colecao_selecionada'))
     ]['id'].to_string(index=False)
 
-dArmas = supabase.table('dArmas').select('nome, dArmas_Tipo(arma), dNivel(nivel,nivel_descricao_USA)').eq('id_colecao', 1).execute().data
+dArmas = supabase.table('dArmas'
+    ).select('nome, dArmas_Tipo(arma), dNivel(nivel,nivel_descricao_USA)'
+    ).eq('id_colecao', 1).execute().data #Mudar o int 1 para Id_Colecção_Selecionada Quando tiver um visual
+
 dArmas_list = []
 for skin in dArmas:
     nome = skin['nome']
@@ -46,6 +52,25 @@ for skin in dArmas:
     dArmas_list.append([nome, arma, nivel, nivel_USA])
 
 dArmas_df = pd.DataFrame(dArmas_list, columns = ['Nome', 'Arma', 'Nivel','Nivel USA'])
+
+opcoes_niveis = [
+    'Consumer Grade', 'Industrial Grade', 'Mil-Spec', 'Restricted','Classified', 'Covert', 'Contraband'
+    ]
+
+opcoes_niveis_nao_disponivel = [
+    'Contraband'
+    ]
+
+st.selectbox(
+    "Niveis:",
+    options=opcoes_niveis[:-1], 
+    index=None, 
+    key='Nivel_Selecionado', 
+    help='Clique e selecione o nível das skins que serão a base do contrato', 
+    disabled= False,
+    placeholder = "Selecione o nível desejado", 
+    label_visibility="visible")
+
 
 """
 Com base na seleção informada:
